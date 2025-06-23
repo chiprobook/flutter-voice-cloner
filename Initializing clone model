@@ -1,0 +1,46 @@
+def initialize_cloning(self): 
+        # AI Cloning logic using Wav2Vec2 model 
+        try: 
+            tokenizer = Wav2Vec2CTCTokenizer.from_pretrained('facebook/wav2vec2-large-960h') 
+            model = Wav2Vec2ForCTC.from_pretrained('facebook/wav2vec2-large-960h') 
+            
+            # Convert recorded data to suitable format for the model       
+            audio_np = np.array(self.record_data, dtype=np.float32)
+
+            if audio_np.shape[0] != self.sample_rate: 
+                print(f"Expected sample rate: {self.sample_rate}, got: {audio_np.shape[0]}") 
+                    
+            # Perform inference
+            input_values = tokenizer(audio_np, return_tensors="pt", sampling_rate=self.sample_rate).input_values 
+            logits = model(input_values).logits 
+            predicted_ids = torch.argmax(logits, dim=-1) 
+            
+            # Decode predicted text 
+            transcription = tokenizer.batch_decode(predicted_ids)[0] 
+            
+            if transcription.strip().lower() == self.text_prompts[self.current_prompt_index].strip().lower(): 
+                self.feedback_text.value = "Correct, moving to next word." 
+                self.current_prompt_index += 1 
+                if self.current_prompt_index < len(self.text_prompts): 
+                    self.prompt_text.value = self.text_prompts[self.current_prompt_index] 
+                else: 
+                    self.feedback_text.value = "All words recorded successfully." 
+                    self.save_cloned_voice(transcription, audio_np)
+                    self.stop_action(None) 
+            else: 
+                self.feedback_text.value = "Incorrect, please repeat."
+            
+            self.cloned_features = self.voice_feature_extractor.extract_features(audio_np)
+        except Exception as e: 
+            Messagebox(Text(f"Error in cloning process: {e}"), self.page) 
+            
+    def next_prompt(self, e): 
+        # Move to the next prompt manually (for testing or user control) 
+        self.current_prompt_index += 1 
+        if self.current_prompt_index < len(self.text_prompts): 
+            self.prompt_text.value = self.text_prompts[self.current_prompt_index] 
+            self.feedback_text.value = "Next prompt displayed." 
+        else: 
+            self.feedback_text.value = "All prompts completed." 
+            self.stop_action(None) 
+        self.page.update()
