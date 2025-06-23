@@ -195,4 +195,31 @@ def update_wave(self):
                         break 
                     else: 
                         raise 
+def pause_action(self, e):
+        self.is_paused = not self.is_paused
+        self.pause_record_button.text = "Continue" if self.is_paused else "Pause"
+        self.feedback_text.value = "Paused" if self.is_paused else "Recording in progress..."
+        self.page.update()
+
+def stop_action(self, e):
+        self.is_recording_or_cloning = False
+        self.is_pause = False
+
+        if self.current_mode == "record": 
+            self.stream.stop() 
+            self.save_audio() 
+            
+        elif self.current_mode == "clone": 
+            self.stream.stop() 
+            self.initialize_cloning()
+
+        self.animated_switcher.content = self.main_record_button
+        self.pause_record_button.visible = False
+        self.pause_record_button.Text = "Pause"
+        self.stop_record_button.visible = False
+        self.feedback_text.visible = False 
+        self.prompt_text.visible = False
+
+        self.page.update()
+
     
