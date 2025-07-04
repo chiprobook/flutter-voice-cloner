@@ -1,73 +1,92 @@
-🚀 Features
-Voice Feature Extraction Uses Facebook’s Wav2Vec2 model to extract deep speech features from raw audio.
+# 🧬 FlutterVoiceClone
 
-AI Voice Cloning Guides you through a text-prompted recording flow, verifies transcription accuracy, then generates a feature vector representing your voice.
+![Python](https://img.shields.io/badge/Language-Python-blue)
+![Flutter](https://img.shields.io/badge/Frontend-Flutter-orange)
+![License](https://img.shields.io/badge/License-MIT-green)
+![Model](https://img.shields.io/badge/Model-Wav2Vec2%20%2B%20T5-purple)
+![Status](https://img.shields.io/badge/Status-Experimental-yellow)
 
-Text-to-Speech & Singing Synthesis Leverages a T5-derived seq2seq speech model to generate new audio in your cloned voice—supports plain speech and singing.
+![Demo Screenshot](cloner.png) <!-- Replace with actual image path -->
 
-Interactive Flet UI Cross-platform desktop UI for recording, cloning, playback, and saving audio files.
+---
 
-Session-driven Prompt Flow Multi-step recording prompts with live feedback: “Correct, moving to next word” or “Incorrect, please repeat.”
+## 📣 Overview
 
-Create & activate a virtual environment
+**FlutterVoiceClone** is a voice cloning and synthesis app built with Flutter for UI and Python under the hood for real-time audio processing and deep learning inference. It allows users to record their voice, match speech prompts, clone vocal features, and generate new speech using that cloned identity.
+
+---
+
+## 🚀 Features
+
+- 🎙️ Record user voice with animated waveform visualizations
+- 🔁 Switch between *Recording* and *Cloning* modes
+- 🧠 Extract vocal features via `facebook/wav2vec2-large-960h`
+- 💬 Text-to-speech synthesis using `T5-large` trained in speech-seq2seq
+- ✅ Validate prompt transcription before cloning
+- 🧪 Animated playback and transformation interface
+- 🔐 UI gradients, feedback prompts, and floating controls
+
+---
+
+## 🛠 Technologies
+
+- **Flutter** (UI interface)
+- **Python**  
+  - `sounddevice`, `soundfile`, `numpy`, `torch`, `transformers`, `tensorflow`
+- **HuggingFace Models**  
+  - [`facebook/wav2vec2-large-960h`](https://huggingface.co/facebook/wav2vec2-large-960h)  
+  - [`t5-large`](https://huggingface.co/t5-large)
+- **Custom Components**  
+  - `AnimatedSwitcher`, `PopupMenu`, `ElevatedButton`, `IconButton`, `Container`, `Row`, `Column`
+
+---
+
+## 📦 Installation
+
+1. Clone the repo:
+
+   ```bash
+   git clone https://github.com/chiprobook/flutter-voice-cloner.git
+   cd flutter-voice-cloner
+
+2. Install dependencies:
+
+  bash  
+  pip install sounddevice soundfile numpy torch transformers tensorflow
+  Ensure you have a working Python environment and microphone access.
+
+💻 Usage
+Run the main app:
 
 bash
-python3 -m venv venv
-source venv/bin/activate    # macOS/Linux
-venv\Scripts\activate.bat   # Windows
-Install dependencies
+python flutter-voice-cloner.py
+Inside the app:
 
-bash
-pip install -r requirements.txt
-requirements.txt should include:
+Tap the central mic icon to start recording or cloning
+Follow spoken prompts
+Receive feedback based on transcription match
+Save or transform generated synthetic speech
 
-flet
-torch
-transformers
-soundfile
-sounddevice
-numpy
-🎬 Usage
-Run the app:
+🧬 Cloning Logic
+Extract Features Uses Wav2Vec2 to convert raw waveform into logits:
 
-bash
-python app.py
-The UI will launch. Follow on-screen prompts to:
-
-Record yourself reading predefined sentences.
-
-Get real-time feedback on transcription accuracy.
-
-Auto-clone your voice once all prompts are correct.
-
-Enter any text to synthesize new speech or singing in your cloned voice.
-
-Play back, transform, or save the generated audio.
-
-🛠 Key Components
-VoiceFeatureExtractor
 python
-from transformers import Wav2Vec2CTCTokenizer, Wav2Vec2ForCTC
+self.voice_feature_extractor.extract_features(audio_np)
+Verify Prompt Match If predicted transcription equals expected prompt:
+Proceed to save cloned voice
+Update user prompt index
 
-extractor = VoiceFeatureExtractor()
-logits = extractor.extract_features(audio_numpy_array)
-VoiceSynthesizer
+Synthesize New Text Leverages cloned features with T5:
 python
-from transformers import AutoTokenizer, TFAutoModelForSpeechSeq2Seq
+self.synthesize_voice(text)
 
-synth = VoiceSynthesizer(cloned_features)
-wav = synth.synthesize_voice("Hello, world!")
-Init_mode (Flet UI)
-Manages recording sessions, transcription checks, cloning, and playback overlays.
+🧠 Limitations
+Cloning relies on correct spoken prompt matching
+Model inference may vary by environment
+TensorFlow and Torch usage may demand GPU for speed
 
-Core methods:
+🤝 Contribution
+Have a cool idea for better synthesis or prompt generation? Fork this project, submit a pull request, or create an issue—collaboration welcome!
 
-initialize_cloning()
-
-next_prompt()
-
-synthesize_new_content(text)
-
-play_audio(file_path)
-
-load_audio_playback(vocal_file)
+👨‍💻 Author
+Developed by Reginald 📫 chiprobook@gmail.com
